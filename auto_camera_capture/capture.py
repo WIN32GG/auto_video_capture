@@ -5,6 +5,7 @@ from time import sleep, time
 from pathlib import Path
 import os
 import traceback
+import sys
 
 import logging
 
@@ -16,34 +17,50 @@ class CameraCapture:
         self.logger.info = print
         self.cv_cameras: list[cv2.VideoCapture] = []
         self.save_path = Path(save_base_path)
+        self.thread: Thread = None
 
         self.save_path.mkdir(exist_ok=True)
 
+    def close_cameras(self) -> None:
+        # Close cameras
+        for cam in self.cv_cameras:
+            try:
+                cam.release()
+            except: pass
+
+        self.cv_cameras.clear()
+
     def open_cameras(self) -> None:
+        self.close_cameras()
         for cam in self.cameras:
             self.cv_cameras.append(cv2.VideoCapture(cam))
 
     def start(self) -> None:
         self.open_cameras()
-        Thread(target = self._thread_target, daemon = True).start()
+        self.thread = Thread(target = self._thread_target, daemon = True)
+        self.thread.start()
+
+    def join(self):
+        if self.thread is None: return
+        self.thread.join()
 
     def _thread_target(self) -> NoReturn:
         
-        self.logger.info("Started capture thread")
+        print("[CAPTURE] Started capture thread")
         while True:
             
             for idx, cvcam in enumerate(self.cv_cameras):
                 try:
-                    self.logger.info(f"Capturing from camera {idx}...")
+                    filename = f'{int(time())}_cam{idx}.jpg'
+                    print(f"[CAPTURE] Capturing from camera {idx} to {filename}")
                     success, img = cvcam.read()
                     if not success:
-                        self.logger.error(f"FAILED!")
-                        continue
-                    filename = f'{int(time())}_cam{idx}.jpg'
-                    self.logger.info(f'Saving as {filename}')
+                        print(f"[CAPTURE] FAILED!", file=sys.stderr)
+                        return
                     cv2.imwrite(os.path.join(self.save_path, filename), img)
                 except Exception as excp:
                     traceback.print_exc()
+                    return
                 
-            self.logger.info(f"Sleeping {self.delay} seconds")
+            print(f"[CAPTURE] -- Sleeping {self.delay} seconds --")
             sleep(self.delay)
