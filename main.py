@@ -4,7 +4,7 @@
 try:
     import cv2
 except ImportError:
-    print("\033[91m\033[1mERROR: Cannot import opencv \033[0m")
+    print("\033[91m\033[1mERROR: Cannot import opencv\033[0m")
     print("\033[93mMake sure opencv is intalled and that you are running the correct python interpreter\033[0m")
     exit(2)
 
@@ -19,10 +19,11 @@ if __name__ == "__main__":
     parser.add_argument("--delay", "-d", default=60, type=int, help="Delay in seconds")
     parser.add_argument("--output", "-o", default="./save", help="Storage directory")
     parser.add_argument("--restart", "-r", default=True, help="Restart automatically", action="store_true")
+    parser.add_argument("--sync", "-s", required=False, default=None, type=str, help="Nextcloud shared folder token on dvic repo")
 
     args = parser.parse_args()
     
-    capture = CameraCapture(delay=args.delay, cameras=args.camera, save_base_path=args.output)
+    capture = CameraCapture(delay=args.delay, cameras=args.camera, save_base_path=args.output, nc_sync_url=args.sync)
     capture.start()
     
     if args.restart:

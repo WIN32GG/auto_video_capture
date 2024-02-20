@@ -6,20 +6,24 @@ from pathlib import Path
 import os
 import traceback
 import sys
+from auto_camera_capture.nc import NextCloudSync
 
 import logging
 
 class CameraCapture:
-    def __init__(self, delay: float, cameras: list[str], save_base_path: str) -> None:
+    def __init__(self, delay: float, cameras: list[str], save_base_path: str, nc_sync_url: str = None) -> None:
         self.cameras = cameras
         self.delay = delay
         self.logger = logging.getLogger("")
         self.logger.info = print
         self.cv_cameras: list[cv2.VideoCapture] = []
+        
         self.save_path = Path(save_base_path)
-        self.thread: Thread = None
-
         self.save_path.mkdir(exist_ok=True)
+
+        self.thread: Thread = None
+        self.sync = NextCloudSync(self.save_path, nc_sync_url)
+
 
     def close_cameras(self) -> None:
         # Close cameras
