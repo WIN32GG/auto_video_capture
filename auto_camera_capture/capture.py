@@ -13,7 +13,7 @@ import glob
 
 import logging
 
-FOLDER_CLEANUP_TRIGGER = 1e10 # 10 Gb
+FOLDER_CLEANUP_TRIGGER = 2e10 # 20 Gb
 
 class CameraCapture:
     def __init__(self, delay: float, cameras: list[str], save_base_path: str, nc_sync_urls: list[str] = None, show: bool = True) -> None:
