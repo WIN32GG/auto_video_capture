@@ -6,13 +6,15 @@ from threading import Thread
 from pathlib import Path
 from time import sleep
 from six.moves.urllib import parse
+from threading import Lock
 
 SYNC_WAIT_TIME = 30
 
 class NextCloudSync():
 
-    def __init__(self, folder: Path, nc_urls: list[str]) -> None:
+    def __init__(self, folder: Path, nc_urls: list[str], lock: Lock) -> None:
         self.sync_folder = folder
+        self.lock = lock
         self.ncs: list[nextcloud_client.Client] = []
         if nc_urls is None or len(nc_urls) == 0:
             print("\033[93m[SYNC] Cloud Sync disabled! Provide a sync url\033[0m")
@@ -35,7 +37,8 @@ class NextCloudSync():
         print("[SYNC] Started sync thread")
         while True:
             try:
-                self.run_sync()
+                with self.lock:
+                    self.run_sync()
             except:
                 traceback.print_exc()
             print(f"[SYNC] Waiting {SYNC_WAIT_TIME} seconds")
@@ -78,4 +81,3 @@ class NextCloudSync():
     def upload_file(self, nc: nextcloud_client.Client, file: Path, remote: str) -> bool:
         print(f"[SYNC] Pushing {file}")
         return nc.put_file(remote, str(file))
-        return nc.drop_file(str(file))
