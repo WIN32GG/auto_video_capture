@@ -10,8 +10,12 @@ from auto_camera_capture.nc import NextCloudSync
 from threading import Lock
 import os
 import glob
-
-import logging
+import random
+import string
+ 
+def random_string_generator(str_size, allowed_chars = string.ascii_letters+string.digits) -> str:
+    return ''.join(random.choice(allowed_chars) for x in range(str_size))
+ 
 
 FOLDER_CLEANUP_TRIGGER = 2e10 # 20 Gb
 
@@ -70,7 +74,7 @@ class CameraCapture:
     def _thread_target(self) -> NoReturn:
         print("[CAPTURE] Started capture thread")
         while True:
-            current_folder = self.save_path/str(int(time()))
+            current_folder = self.save_path/f'{str(int(time()))}_{random_string_generator(4)}'
             current_folder.mkdir(exist_ok=True)
             for idx, cvcam in enumerate(self.cv_cameras):
                 try:

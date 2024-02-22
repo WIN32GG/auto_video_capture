@@ -23,7 +23,8 @@ class NextCloudSync():
             for url in nc_urls:
                 public_link_components = parse.urlparse(url)
                 url = public_link_components.scheme + '://' + public_link_components.hostname + '/'.join(public_link_components.path.split("/")[:-2])
-                folder_token = public_link_components.path.split('/')[-1]       
+                folder_token = public_link_components.path.split('/')[-1]
+                print(f"[SYNC] Token: {folder_token} ")
                 nc = nextcloud_client.Client(url) #! do not use from_public_url bug in lib
                 nc.anon_login(folder_token)
                 self.ncs.append(nc)
