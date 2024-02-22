@@ -72,6 +72,7 @@ class CameraCapture:
         cv2.namedWindow("bw", cv2.WND_PROP_FULLSCREEN)          
         cv2.setWindowProperty("bw", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
         cv2.imshow("bw", img)
+        imS = cv2.resize(img, (1024, 600)) # for expo
         cv2.waitKey(1) & 0xFF == ord('0')
 
     def _thread_target(self) -> NoReturn:
