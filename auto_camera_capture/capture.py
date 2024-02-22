@@ -11,7 +11,7 @@ from auto_camera_capture.nc import NextCloudSync
 import logging
 
 class CameraCapture:
-    def __init__(self, delay: float, cameras: list[str], save_base_path: str, nc_sync_url: str = None) -> None:
+    def __init__(self, delay: float, cameras: list[str], save_base_path: str, nc_sync_urls: list[str] = None) -> None:
         self.cameras = cameras
         self.delay = delay
         self.logger = logging.getLogger("")
@@ -22,7 +22,7 @@ class CameraCapture:
         self.save_path.mkdir(exist_ok=True)
 
         self.thread: Thread = None
-        self.sync = NextCloudSync(self.save_path, nc_sync_url)
+        self.sync = NextCloudSync(self.save_path, nc_sync_urls)
 
 
     def close_cameras(self) -> None:
@@ -52,16 +52,17 @@ class CameraCapture:
         
         print("[CAPTURE] Started capture thread")
         while True:
-            
+            current_folder = self.save_path/str(int(time()))
+            current_folder.mkdir(exist_ok=True)
             for idx, cvcam in enumerate(self.cv_cameras):
                 try:
-                    filename = f'{int(time())}_cam{idx}.jpg'
+                    filename = f'cam{idx}.jpg'
                     print(f"[CAPTURE] Capturing from camera {idx} to {filename}")
                     success, img = cvcam.read()
                     if not success:
                         print(f"[CAPTURE] FAILED!", file=sys.stderr)
                         return
-                    cv2.imwrite(os.path.join(self.save_path, filename), img)
+                    cv2.imwrite(str(current_folder/filename), img)
                 except Exception as excp:
                     traceback.print_exc()
                     return

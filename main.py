@@ -19,11 +19,11 @@ if __name__ == "__main__":
     parser.add_argument("--delay", "-d", default=60, type=int, help="Delay in seconds")
     parser.add_argument("--output", "-o", default="./save", help="Storage directory")
     parser.add_argument("--restart", "-r", default=True, help="Restart automatically", action="store_true")
-    parser.add_argument("--sync", "-s", required=False, default=None, type=str, help="Nextcloud shared folder token on dvic repo")
+    parser.add_argument("--sync", "-s", required=False, default=None, type=str, nargs='+', action="store", help="Nextcloud shared folder urls")
 
     args = parser.parse_args()
     
-    capture = CameraCapture(delay=args.delay, cameras=args.camera, save_base_path=args.output, nc_sync_url=args.sync)
+    capture = CameraCapture(delay=args.delay, cameras=args.camera, save_base_path=args.output, nc_sync_urls=args.sync)
     capture.start()
     
     if args.restart:
