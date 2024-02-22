@@ -57,19 +57,22 @@ class NextCloudSync():
     
         for nc in self.ncs:
             print(f"[SYNC] Running for {nc.url}")
-            rmote = [f.path for f in nc.list('/', depth=2)]
-            # print(f"[SYNC] Remote: {rmote}")
-            upload_list = [file for file in local_files if file not in rmote]
-            print(f"[SYNC] Files to upload: {upload_list}")
-            for f in upload_list:
-                if '/' in f:
-                    d = f.split('/')[1]
-                    d = f'/{d}/'
-                    if d not in rmote:
-                        print(f"[SYNC] mkdir {d}")
-                        nc.mkdir(d)
-                        rmote.append(d)
-                self.upload_file(nc, f'{str(self.sync_folder)}{f}', f)
+            try:
+                rmote = [f.path for f in nc.list('/', depth=2)]
+                # print(f"[SYNC] Remote: {rmote}")
+                upload_list = [file for file in local_files if file not in rmote]
+                print(f"[SYNC] Files to upload: {upload_list}")
+                for f in upload_list:
+                    if '/' in f:
+                        d = f.split('/')[1]
+                        d = f'/{d}/'
+                        if d not in rmote:
+                            print(f"[SYNC] mkdir {d}")
+                            nc.mkdir(d)
+                            rmote.append(d)
+                    self.upload_file(nc, f'{str(self.sync_folder)}{f}', f)
+            except:
+                traceback.print_exc()
 
 
     def upload_file(self, nc: nextcloud_client.Client, file: Path, remote: str) -> bool:
