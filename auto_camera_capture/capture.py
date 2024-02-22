@@ -46,7 +46,10 @@ class CameraCapture:
     def open_cameras(self) -> None:
         self.close_cameras()
         for cam in self.cameras:
-            self.cv_cameras.append(cv2.VideoCapture(cam))
+            cam = cv2.VideoCapture(cam)
+            cam.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
+            cam.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
+            self.cv_cameras.append(cam)
 
     def start(self) -> None:
         self.open_cameras()
