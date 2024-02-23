@@ -20,11 +20,11 @@ if __name__ == "__main__":
     parser.add_argument("--output", "-o", default="./save", help="Storage directory")
     parser.add_argument("--restart", "-r", default=True, help="Restart automatically", action="store_true")
     parser.add_argument("--sync", "-s", required=False, default=None, type=str, nargs='+', action="store", help="Nextcloud shared folder urls")
-    parser.add_argument("--show", required=False, default=False, action="store_true", help="Display the Image")
+    parser.add_argument("--show", required=False, default=None, type=str, help="Video to stream")
 
     args = parser.parse_args()
     
-    capture = CameraCapture(delay=args.delay, cameras=args.camera, save_base_path=args.output, nc_sync_urls=args.sync)
+    capture = CameraCapture(delay=args.delay, cameras=args.camera, save_base_path=args.output, nc_sync_urls=args.sync, show=args.show)
     capture.start()
     
     if args.restart:
