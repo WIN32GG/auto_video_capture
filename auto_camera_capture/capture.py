@@ -96,9 +96,8 @@ class CameraCapture:
         self.thread: Thread = None
         self.lock = Lock()
         self.sync = NextCloudSync(self.save_path, nc_sync_urls, lock = self.lock)
+        self.stream_lock = Lock()
         Thread(target=self._start_stream, daemon=True).start()
-
-
 
     def begin_stream(self):
         if self.stream_camera_name is None: return
@@ -108,7 +107,8 @@ class CameraCapture:
         if self.stream_camera_name is not None:
 
             while True:
-                sleep(6)
+                while not self.stream_continue:
+                    sleep(0.1)
                 print(f"[STREAM] Start streaming from {self.stream_camera_name}")
                 cap = cv2.VideoCapture(self.stream_camera_name)
                 cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
